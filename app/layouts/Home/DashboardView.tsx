@@ -8,7 +8,7 @@ import { NotFoundUser } from "./NotFoundUser/NotFoundUser";
 import { DashBoard } from "./DashBoard/DashBoard";
 
 export default function DashBoardView() {
-  const { error, data, loading } = useSelector(
+  const { error, loading } = useSelector(
     (state: RootState) => state.users
   );
   const dispatch = useDispatch<AppDispatch>();
