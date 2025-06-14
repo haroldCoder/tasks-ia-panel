@@ -1,0 +1,9 @@
+.modal > div > div > p{
+    color: #ff0707b4;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.no_modal{
+    background-color: transparent;;
+}
