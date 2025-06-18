@@ -8,6 +8,9 @@ export interface TasksState{
     errorDelete: boolean,
     succesDelete: boolean,
     loadingDelete: boolean,
+    loadingUpdate: boolean,
+    errorUpdate: boolean,
+    succesUpdate: boolean,
 }
 
 export const tasksState: TasksState = {
@@ -18,4 +21,7 @@ export const tasksState: TasksState = {
     errorDelete: false,
     succesDelete: false,
     loadingDelete: false,
+    loadingUpdate: false,
+    errorUpdate: false,
+    succesUpdate: false,
 }
