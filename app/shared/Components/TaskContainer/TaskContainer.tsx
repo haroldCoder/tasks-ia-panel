@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Tasks } from "../../interfaces/tasks";
 import { FaRegEdit, FaTrash } from "react-icons/fa";
 import Button from "../Button/Button";
 import Modal from "../Modal/Modal";
 import ModalRemove from "./layouts/ModalRemove/ModalRemove";
-import styles from "./styles/taskContainer.module.css"
+import styles from "./styles/taskContainer.module.css";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import { Spinner } from "../Spinner/Spinner";
-import toast from "react-hot-toast";
+import ModalUpdate from "./layouts/ModalUpdate/ModalUpdate";
 
 enum ModalType {
   NULL,
@@ -22,44 +22,64 @@ export const TaskContainer = ({ task }: { task: Tasks }) => {
     type: ModalType.NULL,
   });
 
-  const { loadingDelete, succesDelete, errorDelete } = useSelector((state: RootState) => state.tasks)
+  const {
+    loadingDelete,
+    loadingUpdate,
+  } = useSelector((state: RootState) => state.tasks);
 
-  const closeModal = () =>{
-    setShow((prev)=>{return {type: ModalType.NULL, show:false}})
-  }
+  const closeModal = useCallback(() => {
+    setShow((prev) => {
+      return { type: ModalType.NULL, show: false };
+    });
+  }, []);
 
-  const openModal = (type: ModalType) =>{
-    setShow((prev)=>{return {type, show: true}})
-  }
+  const openModal = (type: ModalType) => {
+    setShow((prev) => {
+      return { type, show: true };
+    });
+  };
 
-  useEffect(()=>{
-    if(!loadingDelete){
-      if(succesDelete){
-        toast.success("Tasks deleted successfully")
-      }
-      if(errorDelete){
-        toast.error("Error deleting tasks")
-      }
+  useEffect(() => {
+    if (!loadingDelete) {
       closeModal();
     }
-  }, [errorDelete, succesDelete, loadingDelete])
+  }, [loadingDelete]);
+
+  useEffect(() => {
+    if (!loadingUpdate) {
+      closeModal();
+    }
+  }, [loadingUpdate]);
 
   return (
     <>
       {show.show && (
         <Modal
           children={
-            loadingDelete ?
+            loadingDelete || loadingUpdate ? (
               <Spinner size="lg" />
-            :
-            show.type == ModalType.DELETE ? 
-            <ModalRemove idTask={task.id} close={closeModal} /> : 
-            null
+            ) : show.type == ModalType.DELETE ? (
+              <ModalRemove idTask={task.id} close={closeModal} />
+            ) : (
+              <ModalUpdate task={task} />
+            )
           }
-          closeIcon={loadingDelete && <></>}
+          closeIcon={loadingDelete || (loadingUpdate && <></>)}
           onClose={closeModal}
-          className={!loadingDelete ? styles.modal : styles.no_modal}
-          title={!loadingDelete ? "Warning" : ""}
+          className={
+            !loadingDelete && !loadingUpdate
+              ? show.type == ModalType.DELETE
+                ? styles.modal
+                : styles.modal_edit
+              : styles.no_modal
+          }
+          title={
+            !loadingDelete && !loadingUpdate
+              ? show.type == ModalType.DELETE
+                ? "Warning"
+                : "Update task"
+              : ""
+          }
         />
       )}
       <div
@@ -71,10 +91,16 @@ export const TaskContainer = ({ task }: { task: Tasks }) => {
           <p className="text-gray-300">{task.description}</p>
         </section>
         <section className="flex items-end justify-center gap-3">
-          <Button onClick={()=>openModal(ModalType.DELETE)} className="text-red-600 text-lg">
+          <Button
+            onClick={() => openModal(ModalType.DELETE)}
+            className="text-red-600 text-lg"
+          >
             <FaTrash />
           </Button>
-          <Button className="text-gray-800 text-xl">
+          <Button
+            onClick={() => openModal(ModalType.EDIT)}
+            className="text-gray-800 text-xl"
+          >
             <FaRegEdit />
           </Button>
         </section>

@@ -1,8 +1,10 @@
 import { ActionReducerMapBuilder, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { TasksState, tasksState } from "../../constants/tasksState";
 import { createCachedThunk } from "../cache/createdCachedThunk";
-import { deleteTask, getTasksByUser } from "../../utils/requests/tasks.requests";
+import { deleteTask, getTasksByUser, updateTask } from "../../utils/requests/tasks.requests";
 import { Tasks } from "../../interfaces/tasks";
+import { TaskUpdate } from "../../interfaces/taskUpdate";
+import { toastError, toastSuccess } from "../../thunks/toasts";
 
 
 export const fetchTasks = createCachedThunk({
@@ -12,14 +14,33 @@ export const fetchTasks = createCachedThunk({
 })
 
 export const deleteTaskThunk = createAsyncThunk(
-    'tasks/deleteTask', async(id: number) =>{
-        try{
+    'tasks/deleteTask', async (id: number, {dispatch}) => {
+        try {
             const response = await deleteTask(id);
-            if(!response.ok){
+            if (!response.ok) {
                 throw new Error("An ocurred error");
             }
+            dispatch(toastSuccess("Tasks delete successfully"));
         }
-        catch(error: any){
+        catch (error: any) {
+            dispatch(toastError("Error deleting tasks"))
+            throw new Error(error.message);
+        }
+    }
+)
+
+export const updateTaskThunk = createAsyncThunk(
+    'tasks/updateTask', async ({ task, id }: { task: TaskUpdate, id: number }, {dispatch}) => {
+        try {
+            const response = await updateTask(id, task);
+            
+            if (!response.ok) {
+                throw new Error("An ocurred error");
+            }
+            dispatch(toastSuccess("Tasks update successfully"));
+        }
+        catch (error: any) {
+            dispatch(toastError("Error updating tasks"))
             throw new Error(error.message);
         }
     }
@@ -32,31 +53,44 @@ const tasksSlice = createSlice({
     reducers: {},
     extraReducers: (builder: ActionReducerMapBuilder<any>) => {
         builder
-        .addCase(fetchTasks.pending, (state) => {
-            state.loading = true;
-        })
-        .addCase(fetchTasks.fulfilled, (state, action: {payload: Tasks[] | any}) => {
-            state.success = true;
-            state.loading = false;
-            state.data = action.payload.response;
-        })
-        .addCase(fetchTasks.rejected, (state, action: {payload: string | any}) => {
-            state.loading = false;
-            state.error = action.payload
-        })
-        .addCase(deleteTaskThunk.pending, (state: TasksState)=>{
-            state.loadingDelete = true;
-            state.errorDelete = false;
-            state.succesDelete = false;
-        })
-        .addCase(deleteTaskThunk.rejected, (state: TasksState)=>{
-            state.errorDelete = true;
-            state.loadingDelete = false;
-        })
-        .addCase(deleteTaskThunk.fulfilled, (state: TasksState)=>{
-            state.succesDelete = true;
-            state.loadingDelete = false;
-        })
+            .addCase(fetchTasks.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchTasks.fulfilled, (state, action: { payload: Tasks[] | any }) => {
+                state.success = true;
+                state.loading = false;
+                state.data = action.payload.response;
+            })
+            .addCase(fetchTasks.rejected, (state, action: { payload: string | any }) => {
+                state.loading = false;
+                state.error = action.payload
+            })
+            .addCase(deleteTaskThunk.pending, (state: TasksState) => {
+                state.loadingDelete = true;
+                state.errorDelete = false;
+                state.succesDelete = false;
+            })
+            .addCase(deleteTaskThunk.rejected, (state: TasksState) => {
+                state.errorDelete = true;
+                state.loadingDelete = false;
+            })
+            .addCase(deleteTaskThunk.fulfilled, (state: TasksState) => {
+                state.succesDelete = true;
+                state.loadingDelete = false;
+            })
+            .addCase(updateTaskThunk.fulfilled, (state: TasksState) => {
+                state.loadingUpdate = false;
+                state.succesUpdate = true;
+            })
+            .addCase(updateTaskThunk.rejected, (state: TasksState) => {
+                state.loadingUpdate = false;
+                state.errorUpdate = true;
+            })
+            .addCase(updateTaskThunk.pending, (state: TasksState) => {
+                state.loadingUpdate = true;
+                state.succesUpdate = false;
+                state.errorUpdate = false;
+            })
     }
 
 })
