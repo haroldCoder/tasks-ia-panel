@@ -1,5 +1,6 @@
 const tasks = "tasks";
 
 export const tasksRoutes = {
-    getAllTasksByUser: `${tasks}/tasks/`
+    getAllTasksByUser: `${tasks}/tasks/`,
+    deleteTask: `${tasks}/tasks/`
 }
