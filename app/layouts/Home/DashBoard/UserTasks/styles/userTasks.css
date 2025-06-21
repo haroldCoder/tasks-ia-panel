@@ -1,0 +1,12 @@
+[data-slot="table-container"]{
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+[data-slot="table-cell"]{
+    text-align: center;  
+    display: table-cell;
+}
