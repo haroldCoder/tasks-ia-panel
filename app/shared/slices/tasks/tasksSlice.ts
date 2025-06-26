@@ -1,10 +1,11 @@
 import { ActionReducerMapBuilder, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { TasksState, tasksState } from "../../constants/tasksState";
 import { createCachedThunk } from "../cache/createdCachedThunk";
-import { deleteTask, getTasksByUser, updateTask } from "../../utils/requests/tasks.requests";
+import { assignAditionalTask, deleteTask, getTasksByUser, updateTask } from "../../utils/requests/tasks.requests";
 import { Tasks } from "../../interfaces/tasks";
 import { TaskUpdate } from "../../interfaces/taskUpdate";
 import { toastError, toastSuccess } from "../../thunks/toasts";
+import { TaskAditional } from "../../interfaces/taskAditional";
 
 
 export const fetchTasks = createCachedThunk({
@@ -14,7 +15,7 @@ export const fetchTasks = createCachedThunk({
 })
 
 export const deleteTaskThunk = createAsyncThunk(
-    'tasks/deleteTask', async (id: number, {dispatch}) => {
+    'tasks/deleteTask', async (id: number, { dispatch }) => {
         try {
             const response = await deleteTask(id);
             if (!response.ok) {
@@ -30,10 +31,10 @@ export const deleteTaskThunk = createAsyncThunk(
 )
 
 export const updateTaskThunk = createAsyncThunk(
-    'tasks/updateTask', async ({ task, id }: { task: TaskUpdate, id: number }, {dispatch}) => {
+    'tasks/updateTask', async ({ task, id }: { task: TaskUpdate, id: number }, { dispatch }) => {
         try {
             const response = await updateTask(id, task);
-            
+
             if (!response.ok) {
                 throw new Error("An ocurred error");
             }
@@ -41,6 +42,24 @@ export const updateTaskThunk = createAsyncThunk(
         }
         catch (error: any) {
             dispatch(toastError("Error updating tasks"))
+            throw new Error(error.message);
+        }
+    }
+)
+
+export const assignAditionalTaskThunk = createAsyncThunk(
+    'tasks/assignAditionalTask',
+    async ({ id, aditionalId, aditionalData }:
+        { id: number, aditionalId?: number, aditionalData: TaskAditional }, { dispatch }) => {
+        try {
+            const response = await assignAditionalTask(id, aditionalData, aditionalId);
+            if (!response.ok) {
+                throw new Error("An ocurred error");
+            }
+            dispatch(toastSuccess("Aditional task assigned successfully"));
+        }
+        catch (error: any) {
+            dispatch(toastError("Error assigning aditional task"))
             throw new Error(error.message);
         }
     }
@@ -90,6 +109,15 @@ const tasksSlice = createSlice({
                 state.loadingUpdate = true;
                 state.succesUpdate = false;
                 state.errorUpdate = false;
+            })
+            .addCase(assignAditionalTaskThunk.pending, (state: TasksState) => {
+                state.loadingAssignAditional = true;
+            })
+            .addCase(assignAditionalTaskThunk.fulfilled, (state: TasksState) => {
+                state.loadingAssignAditional = false;
+            })
+            .addCase(assignAditionalTaskThunk.rejected, (state: TasksState) => {
+                state.loadingAssignAditional = false;
             })
     }
 

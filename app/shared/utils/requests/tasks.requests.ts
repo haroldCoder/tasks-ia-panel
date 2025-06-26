@@ -1,4 +1,5 @@
 import { HttpMethod } from "../../enums/httpmethods.enum"
+import { TaskAditional } from "../../interfaces/taskAditional";
 import { Tasks } from "../../interfaces/tasks";
 import { TaskUpdate } from "../../interfaces/taskUpdate";
 import { tasksRoutes } from "../routes/tasks.routes";
@@ -16,5 +17,10 @@ export const deleteTask = async(id: number) =>{
 
 export const updateTask = async(id: number, task: TaskUpdate) =>{
     const response = await createRequest(HttpMethod.PATCH, `${tasksRoutes.updateTask}${id}`, task);
+    return response;
+}
+
+export const assignAditionalTask = async(id: number, task_aditional: TaskAditional, aditionalId?: number) => {
+    const response = await createRequest(HttpMethod.PATCH, `${tasksRoutes.assignAditionalTask}${aditionalId ? aditionalId : id}`, task_aditional);
     return response;
 }

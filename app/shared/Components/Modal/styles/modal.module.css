@@ -9,6 +9,7 @@
     top: 0;
     left: 0;
     backdrop-filter: blur(6px);
+    z-index: 1000;
 }
 
 .modal_container{

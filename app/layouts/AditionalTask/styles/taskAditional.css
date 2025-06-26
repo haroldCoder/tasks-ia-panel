@@ -1,0 +1,31 @@
+.rdp-day_selected {
+  background-color: #2563eb;
+  color: white;
+}
+.rdp-day_today {
+  border: 2px solid #22c55e;
+}
+
+.rdp-day:hover {
+  background-color: #696969;
+  cursor: pointer;
+}
+
+[data-selected-single="true"]{
+    background-color: #13a100;
+}
+
+#text{
+    color: #ffffff;
+    font-weight: 200;
+    font-size: 18px;
+    text-align: center;
+}
+
+#text-spc{
+    color: #1f1f1f;
+    font-weight: 200;
+    font-size: 17px;
+    text-align: center;
+    margin-top: 10px;
+}

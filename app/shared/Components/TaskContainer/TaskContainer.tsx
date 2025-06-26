@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Tasks } from "../../interfaces/tasks";
 import TaskModal, { ModalTasksType } from "./shared/TaskModal";
 import ButtonDelete from "./layouts/ButtonsTask/ButtonDelete/ButtonDelete";
-import ButtonEdit from "./layouts/ButtonDelete/ButtonEdit/ButtonEdit";
+import ButtonEdit from "./layouts/ButtonsTask/ButtonEdit/ButtonEdit";
 
 export const TaskContainer = ({ task }: { task: Tasks }) => {
 const [show, setShow] = useState<{ show: boolean; type: ModalTasksType }>({

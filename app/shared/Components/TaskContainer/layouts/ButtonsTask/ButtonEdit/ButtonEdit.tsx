@@ -22,7 +22,7 @@ function ButtonEdit({
         openModal(ModalTasksType.EDIT);
         click && click();
       }}
-      className="text-gray-800 text-xl"
+      className="text-gray-800 text-[21px] hover:text-white"
     >
       <FaRegEdit />
     </Button>

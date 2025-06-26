@@ -1,0 +1,24 @@
+.btn{
+    background: #000;
+    border: 1px solid #d3d3d3;
+    color: #FFF;
+    padding: 10px 45px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background: #525252;
+    color: #000;
+}
+
+.modal p {
+    color: #ff0707b4;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.no_modal{
+    background: transparent !important;
+}
+
