@@ -16,7 +16,7 @@ const ButtonDelete = ({ setShow, click }: { setShow: TaskModalProps["setShow"], 
         openModal(ModalTasksType.DELETE)
         click && click();
       }}
-      className="text-gray-200 text-md"
+      className="text-gray-200 text-[17px] hover:text-red-700"
     >
       <FaTrash />
     </Button>

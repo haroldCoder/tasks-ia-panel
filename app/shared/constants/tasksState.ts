@@ -11,6 +11,7 @@ export interface TasksState{
     loadingUpdate: boolean,
     errorUpdate: boolean,
     succesUpdate: boolean,
+    loadingAssignAditional: boolean,
 }
 
 export const tasksState: TasksState = {
@@ -24,4 +25,5 @@ export const tasksState: TasksState = {
     loadingUpdate: false,
     errorUpdate: false,
     succesUpdate: false,
+    loadingAssignAditional: false,
 }
