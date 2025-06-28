@@ -1,6 +1,6 @@
 import { Tasks } from "../interfaces/tasks"
 
-export interface TasksState{
+export interface TasksState {
     loading: boolean,
     error: string | null,
     data: Array<Tasks>,
@@ -12,6 +12,9 @@ export interface TasksState{
     errorUpdate: boolean,
     succesUpdate: boolean,
     loadingAssignAditional: boolean,
+    task: { title: Tasks["title"], description: Tasks["description"] },
+    loadingTask: boolean,
+    errorTask: string | null,
 }
 
 export const tasksState: TasksState = {
@@ -26,4 +29,7 @@ export const tasksState: TasksState = {
     errorUpdate: false,
     succesUpdate: false,
     loadingAssignAditional: false,
+    task: { title: "", description: "" },
+    loadingTask: false,
+    errorTask: null,
 }

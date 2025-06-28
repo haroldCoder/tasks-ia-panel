@@ -1,0 +1,22 @@
+.containerCalendar{
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to bottom right, #9b9b9b69 0%, #000000 100%);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.btn{
+    width: 100%;
+    background-color: #0040c9;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    color: white;
+}
+
+.input{
+    background: #000 !important;
+    padding: 10px 8px !important;
+    width: 100%;
+}

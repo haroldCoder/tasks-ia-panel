@@ -24,3 +24,8 @@ export const assignAditionalTask = async(id: number, task_aditional: TaskAdition
     const response = await createRequest(HttpMethod.PATCH, `${tasksRoutes.assignAditionalTask}${aditionalId ? aditionalId : id}`, task_aditional);
     return response;
 }
+
+export const getTaskById = async(id: number) => {
+    const response = await createRequest(HttpMethod.GET, `${tasksRoutes.getTaskById}${id}`);
+    return response;
+}

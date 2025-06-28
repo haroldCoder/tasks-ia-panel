@@ -1,7 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { TasksState, tasksState } from "../../constants/tasksState";
 import { createCachedThunk } from "../cache/createdCachedThunk";
-import { assignAditionalTask, deleteTask, getTasksByUser, updateTask } from "../../utils/requests/tasks.requests";
+import { assignAditionalTask, deleteTask, getTaskById, getTasksByUser, updateTask } from "../../utils/requests/tasks.requests";
 import { Tasks } from "../../interfaces/tasks";
 import { TaskUpdate } from "../../interfaces/taskUpdate";
 import { toastError, toastSuccess } from "../../thunks/toasts";
@@ -65,6 +65,12 @@ export const assignAditionalTaskThunk = createAsyncThunk(
     }
 )
 
+export const fetchTaskById = createCachedThunk({
+    typePrefix: 'tasks/fetchTaskById',
+    fetchFunction: (id: number) => getTaskById(id),
+    cacheKeyGenerator: (id: number) => id.toString()
+})
+
 
 const tasksSlice = createSlice({
     name: 'tasks',
@@ -119,6 +125,18 @@ const tasksSlice = createSlice({
             .addCase(assignAditionalTaskThunk.rejected, (state: TasksState) => {
                 state.loadingAssignAditional = false;
             })
+            .addCase(fetchTaskById.fulfilled, (state: TasksState, action: { payload: any }) => {
+                state.loadingTask = false;
+                state.task = {title: action.payload.response.title, description: action.payload.response.description};
+            })
+            .addCase(fetchTaskById.rejected, (state: TasksState, action: {payload: any}) => {
+                state.errorTask = action.payload.response;
+                state.loadingTask = false;
+            })
+            .addCase(fetchTaskById.pending, (state: TasksState)=>{
+                state.loadingTask = true;
+            })
+                
     }
 
 })

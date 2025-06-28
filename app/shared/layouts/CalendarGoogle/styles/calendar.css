@@ -1,0 +1,23 @@
+.scrollarea-custom [data-radix-scroll-area-viewport] {
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af #f3f4f6;
+}
+
+.scrollarea-custom [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  width: 18px;
+  height: 18px;
+}
+
+.scrollarea-custom [data-radix-scroll-area-viewport]::-webkit-scrollbar-track {
+  background: #f3f4f6; 
+  border-radius: 4px;
+}
+
+.scrollarea-custom [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: #9ca3af; 
+  border-radius: 4px;
+}
+
+.scrollarea-custom [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: #6b7280; 
+}
