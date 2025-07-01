@@ -1,0 +1,18 @@
+.container{
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px;
+    border: 1px solid #FFF;
+    border-radius: 15px;
+    align-items: center;
+}
+
+.btn{
+    cursor: pointer;
+    border-radius: 100%;
+    background: #13a100;
+    padding: 0;
+    height: 30px;
+    width: 30px;
+}

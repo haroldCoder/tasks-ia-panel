@@ -1,14 +1,14 @@
 
 export interface IGoogleCalendar{
-    loading: boolean,
-    error: string | null,
+    loadingCreate: boolean,
+    errorCreate: string | null,
     data: [],
-    success: boolean | null,
+    successCreate: boolean | null,
 }
 
 export const googleCalendarState : IGoogleCalendar = {
-    loading: false,
-    error: null,
+    loadingCreate: false,
+    errorCreate: null,
     data: [],
-    success: null,
+    successCreate: null,
 }

@@ -13,10 +13,15 @@
     padding: 10px;
     text-align: center;
     color: white;
+    cursor: pointer;
 }
 
 .input{
     background: #000 !important;
     padding: 10px 8px !important;
     width: 100%;
+}
+
+.modal{
+    background: transparent;
 }

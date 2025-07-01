@@ -114,7 +114,7 @@ export const AditionalTask = ({
               <div />
             </div>
           </section>
-          <section className="mt-8">
+          <section className="mt-8 max-w-[30vw]">
             <MultiSelect
               options={labelOptions}
               selected={labels}

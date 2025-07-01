@@ -1,0 +1,27 @@
+.btn{
+    background-color: #0554ff;
+    border-radius: 8px;
+    padding: 6px 12px;
+}
+
+.btn:hover{
+    background-color: #0554ff8a;
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #000000;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.input{
+    background: transparent;
+    border: 1px solid #FFF;
+    border-radius: 10px;
+    color: #FFF;
+    padding: 5px;
+    font-size: 15px;
+}

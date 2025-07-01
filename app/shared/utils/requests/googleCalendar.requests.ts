@@ -1,12 +1,26 @@
 "use server"
 import { google } from "googleapis"
 import { GoogleCalendar } from '../../interfaces/googleCalendar';
+import { clerkClient } from "@clerk/nextjs/server";
 
-export const addEventToCalendar = async (accessToken: string, email: string, calendar_data: GoogleCalendar): Promise<boolean> => {
-  const oauth2Client = new google.auth.OAuth2();
-  oauth2Client.setCredentials({ access_token: accessToken });
+export const addEventToCalendar = async (id_userclerk: string, email: string, calendar_data: GoogleCalendar): Promise<boolean> => {
+  const oAuthResponse = await (await clerkClient()).users.getUserOauthAccessToken(id_userclerk, "oauth_google");
+    
+    if (!oAuthResponse.data || oAuthResponse.data.length === 0) {
+      console.error("No Google OAuth token found for user:", id_userclerk);
+      return false;
+    }
 
-  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    const accessToken = oAuthResponse.data[0].token;
+
+    const client = new google.auth.OAuth2(
+      process.env.GOOGLE_OAUTH_CLIENT_ID,
+      process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+      process.env.GOOGLE_OAUTH_REDIRECT_URI
+    );
+    client.setCredentials({ access_token: accessToken });
+
+  const calendar = google.calendar({ version: 'v3', auth: client });
 
   const event = {
     summary: calendar_data.summary,
