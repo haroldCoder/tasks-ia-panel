@@ -16,8 +16,14 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import "./styles/multiSelect.css";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import styles from "./styles/multiselect.module.css"
+import ContainerSelect from "./components/ContainerSelect/ContainerSelect";
 
-type Option = { value: string; label: string, icon?: React.ComponentType<{ value: any }> };
+type Option = {
+  value: string;
+  label: string;
+  icon?: React.ComponentType<{ value: any }>;
+};
 
 interface MultiSelectProps {
   options: Option[];
@@ -41,16 +47,29 @@ export function MultiSelect({
     onChange(newSelected);
   };
 
+  const removeElement = (value: string) =>{
+    const newSelected = selected.filter((slec)=> slec !== value)
+    onChange(newSelected)
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" className="w-[200px] cursor-pointer justify-between">
+      <div className={styles.container}>
+        <div className="flex flex-wrap max-w-[90%] gap-4">
           {selected.length > 0
-            ? `${selected.length} selected`
+            ? selected.map((slec) => <ContainerSelect remove={()=>removeElement(slec)} value={slec} />)
             : placeholder || "Select..."}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+        </div>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={styles.btn}
+          >
+            +
+          </Button>
+        </PopoverTrigger>
+      </div>
+      <PopoverContent className="w-[100%] p-0">
         <Command>
           <CommandList>
             <ScrollArea className="w-48 max-h-[150px] rounded-md border">
@@ -58,26 +77,24 @@ export function MultiSelect({
                 {options.map((option) => {
                   const Icon = option.icon;
                   return (
-                  <CommandItem
-                    key={option.value}
-                    onSelect={() => handleSelect(option.value)}
-                    className="cursor-pointer"
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        selected.includes(option.value)
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
-                    {
-                      Icon &&
-                      <Icon value={option.value} />
-                    }
-                    {option.label}
-                  </CommandItem>
-                )})}
+                    <CommandItem
+                      key={option.value}
+                      onSelect={() => handleSelect(option.value)}
+                      className="cursor-pointer"
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          selected.includes(option.value)
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                      {Icon && <Icon value={option.value} />}
+                      {option.label}
+                    </CommandItem>
+                  );
+                })}
               </CommandGroup>
             </ScrollArea>
           </CommandList>

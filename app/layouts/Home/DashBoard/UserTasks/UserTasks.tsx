@@ -36,7 +36,7 @@ export const UserTasks = () => {
   });
   const [selectTask, setSelectTask] = React.useState<Tasks | null>(null);
   const router = useRouter();
-  const [loadingRoute, setLoadingRoute] = React.useState<boolean>(false); 
+  const [loadingRoute, setLoadingRoute] = React.useState<boolean>(false);
 
   const getAllTasks = async () => {
     await dispatch(
@@ -51,21 +51,19 @@ export const UserTasks = () => {
     getAllTasks();
   }, []);
 
-  const selectTaskHandler = useCallback(
-    (task: Tasks) => {
-      setSelectTask(task);
-    }, []
-  );
+  const selectTaskHandler = useCallback((task: Tasks) => {
+    setSelectTask(task);
+  }, []);
 
-  const getTaskPage = (id: number, id_aditional?: number) => {
+  const getTaskPage = (id: number, title: string, id_aditional?: number) => {
     setLoadingRoute(true);
     router.push(`/tasks/${id}/${id_aditional ? id_aditional : null}`);
     setLoadingRoute(false);
-  }
+  };
 
   return (
     <div>
-      {(loading || loadingRoute) ? (
+      {loading || loadingRoute ? (
         <div className="flex w-[100%] h-[100%] justify-center items-center">
           <Spinner size="md" color="text-blue-500" />
         </div>
@@ -85,17 +83,29 @@ export const UserTasks = () => {
               {data.map((tk: Tasks, index: number) => (
                 <Fragment key={index}>
                   <TaskModal show={show} setShow={setShow} task={selectTask!} />
-                  <TableRow className="h-10 cursor-pointer" key={tk.id} onClick={()=>getTaskPage(tk.id, tk.task_aditional?.id)}>
+                  <TableRow
+                    className="h-10 cursor-pointer"
+                    key={tk.id}
+                    onClick={() =>
+                      getTaskPage(tk.id, tk.title, tk.task_aditional?.id)
+                    }
+                  >
                     <TableCell>{tk.title}</TableCell>
                     <TableCell>{tk.description}</TableCell>
                     <TableCell>
-                        <PriorityIndicator priority={tk.priority} />
+                      <PriorityIndicator priority={tk.priority} />
                     </TableCell>
                     <TableCell>
-                      <ButtonDelete setShow={setShow} click={()=>selectTaskHandler(tk)} />
+                      <ButtonDelete
+                        setShow={setShow}
+                        click={() => selectTaskHandler(tk)}
+                      />
                     </TableCell>
                     <TableCell>
-                      <ButtonEdit setShow={setShow} click={()=>selectTaskHandler(tk)} />
+                      <ButtonEdit
+                        setShow={setShow}
+                        click={() => selectTaskHandler(tk)}
+                      />
                     </TableCell>
                   </TableRow>
                 </Fragment>

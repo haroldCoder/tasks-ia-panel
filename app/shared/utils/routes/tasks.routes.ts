@@ -5,4 +5,5 @@ export const tasksRoutes = {
     deleteTask: `${tasks}/tasks/`,
     updateTask: `${tasks}/tasks/`,
     assignAditionalTask: `${tasks}/assign-aditional/`,
+    getTaskById: `${tasks}/task/`,
 }

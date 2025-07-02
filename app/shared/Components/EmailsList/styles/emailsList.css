@@ -1,0 +1,4 @@
+section > [data-slot="container-select"]{
+    border-radius: 100px;
+    background: #2e62a5;
+}
