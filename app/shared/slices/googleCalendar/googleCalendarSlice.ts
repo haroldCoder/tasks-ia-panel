@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { googleCalendarState } from "../../constants/googleCalendar";
-import { addEventToCalendar } from "../../utils/requests/googleCalendar.requests";
+import { addEventToCalendar, getEventsFromCalendar, searchEventFromCalendar } from "../../utils/requests/googleCalendar.requests";
 import { GoogleCalendar } from "../../interfaces/googleCalendar";
 import { toastError, toastSuccess } from "../../thunks/toasts";
+import { createCachedThunk } from "../cache/createdCachedThunk";
 
 export const createEventOnCalendar = createAsyncThunk(
     "googleCalendar/createEventOnCalendar",
@@ -11,7 +12,7 @@ export const createEventOnCalendar = createAsyncThunk(
             const response = await addEventToCalendar(id_user, email, event);
 
             console.log(response);
-            
+
 
             if (!response) {
                 return rejectWithValue("Error creating event on calendar");
@@ -27,6 +28,18 @@ export const createEventOnCalendar = createAsyncThunk(
     }
 
 )
+
+export const searchEventOnCalendarTunk = createCachedThunk({
+    typePrefix: "googleCalendar/searchEventOnCalendar",
+    fetchFunction: ({ id_userclerk, event_id }: { id_userclerk: string, event_id: string }) => searchEventFromCalendar(id_userclerk, event_id),
+    cacheKeyGenerator: (arg: { id_userclerk: string, event_id: string }) => arg.id_userclerk + arg.event_id,
+})
+
+export const getEventsFromCalendarTunk = createCachedThunk({
+    typePrefix: "googleCalendar/getEventsFromCalendar",
+    fetchFunction: ({ id_userclerk }: { id_userclerk: string }) => getEventsFromCalendar(id_userclerk),
+    cacheKeyGenerator: (arg: { id_userclerk: string }) => arg.id_userclerk,
+})
 
 const googleCalendarSlice = createSlice({
     name: "googleCalendar",
@@ -45,6 +58,32 @@ const googleCalendarSlice = createSlice({
                 state.loadingCreate = true;
                 state.successCreate = false;
                 state.errorCreate = null;
+            })
+            .addCase(searchEventOnCalendarTunk.fulfilled, (state, action) => {
+                state.loadingSearch = false;
+                state.successSearch = true;
+            })
+            .addCase(searchEventOnCalendarTunk.rejected, (state, action: { payload: any }) => {
+                state.loadingSearch = false;
+                state.errorSearch = action.payload;
+            })
+            .addCase(searchEventOnCalendarTunk.pending, (state, action) => {
+                state.loadingSearch = true;
+                state.successSearch = false;
+                state.errorSearch = null;
+            })
+            .addCase(getEventsFromCalendarTunk.fulfilled, (state, action) => {
+                state.loadingGet = false;
+                state.successGet = true;
+            })
+            .addCase(getEventsFromCalendarTunk.rejected, (state, action: { payload: any }) => {
+                state.loadingGet = false;
+                state.errorGet = action.payload;
+            })
+            .addCase(getEventsFromCalendarTunk.pending, (state, action) => {
+                state.loadingGet = true;
+                state.successGet = false;
+                state.errorGet = null;
             })
     },
 })

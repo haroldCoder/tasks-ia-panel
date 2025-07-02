@@ -19,7 +19,7 @@ interface RootState {
 
 interface CreateCachedThunkParams<Arg, Returned> {
   typePrefix: string;
-  fetchFunction: (arg: Arg) => Promise<Response>;
+  fetchFunction: (arg: Arg) => Promise<any>;
   cacheKeyGenerator?: (arg: Arg, api: { getState: () => RootState }) => string;
   ttl?: number;
 }

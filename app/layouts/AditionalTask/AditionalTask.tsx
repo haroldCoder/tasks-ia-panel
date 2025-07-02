@@ -48,10 +48,6 @@ export const AditionalTask = ({
     }
   }, [dates]);
 
-  React.useEffect(() => {
-    console.log(task);
-  }, []);
-
   const assignDataAditionalTask = async () => {
     if (dates[0] > dates[1]) {
       setWarning(true);

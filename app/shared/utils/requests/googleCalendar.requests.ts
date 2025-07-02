@@ -1,24 +1,10 @@
 "use server"
 import { google } from "googleapis"
 import { GoogleCalendar } from '../../interfaces/googleCalendar';
-import { clerkClient } from "@clerk/nextjs/server";
+import { googleAuth } from "../services/googleAuth";
 
 export const addEventToCalendar = async (id_userclerk: string, email: string, calendar_data: GoogleCalendar): Promise<boolean> => {
-  const oAuthResponse = await (await clerkClient()).users.getUserOauthAccessToken(id_userclerk, "oauth_google");
-    
-    if (!oAuthResponse.data || oAuthResponse.data.length === 0) {
-      console.error("No Google OAuth token found for user:", id_userclerk);
-      return false;
-    }
-
-    const accessToken = oAuthResponse.data[0].token;
-
-    const client = new google.auth.OAuth2(
-      process.env.GOOGLE_OAUTH_CLIENT_ID,
-      process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-      process.env.GOOGLE_OAUTH_REDIRECT_URI
-    );
-    client.setCredentials({ access_token: accessToken });
+  const client = await googleAuth(id_userclerk);
 
   const calendar = google.calendar({ version: 'v3', auth: client });
 
@@ -41,4 +27,40 @@ export const addEventToCalendar = async (id_userclerk: string, email: string, ca
     return true
   }
   return false
+}
+
+export const getEventsFromCalendar = async (id_userclerk: string): Promise<any> => {
+  try {
+    const client = await googleAuth(id_userclerk);
+
+    const calendar = google.calendar({ version: 'v3', auth: client });
+
+    const calendarResponse = await calendar.events.list({
+      calendarId: 'primary',
+    });
+
+    console.log(calendarResponse.data.items);
+
+    return calendarResponse.data.items;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const searchEventFromCalendar = async (id_userclerk: string, event_id: string): Promise<boolean> => {
+  try {
+    const client = await googleAuth(id_userclerk);
+
+    const calendar = google.calendar({ version: 'v3', auth: client });
+
+    const calendarResponse = await calendar.events.get({
+      calendarId: 'primary',
+      eventId: event_id,
+    });
+
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 }

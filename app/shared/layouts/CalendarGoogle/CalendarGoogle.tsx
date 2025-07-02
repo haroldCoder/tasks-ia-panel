@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./styles/calendarGoogle.module.css";
 import calendarIcon from "@/app/assets/calendarGoogle/calendar.svg";
 import Image from "next/image";
@@ -10,8 +10,7 @@ import "./styles/calendar.css";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store/store";
 import { createEventOnCalendar } from "../../slices/googleCalendar/googleCalendarSlice";
-import { useAuth, useClerk } from "@clerk/nextjs";
-import { addEventToCalendar } from "../../utils/requests/googleCalendar.requests";
+import { useClerk } from "@clerk/nextjs";
 import Modal from "../../Components/Modal/Modal";
 import { Spinner } from "../../Components/Spinner/Spinner";
 import EmailsList from "../../Components/EmailsList/EmailsList";
