@@ -3,5 +3,6 @@ export interface GoogleCalendar{
     description: string,
     start: string,
     end: string,
-    email?: Array<string>
+    email?: Array<string>,
+    id: number
 }

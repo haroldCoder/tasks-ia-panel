@@ -131,6 +131,7 @@ export const AditionalTask = ({
             </div>
           ) : (
             <CalendarGoogle
+              id={id}
               start_date={
                 dates[0] ? dates[0].toISOString() : new Date().toISOString()
               }

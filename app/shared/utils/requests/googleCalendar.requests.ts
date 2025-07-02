@@ -14,6 +14,7 @@ export const addEventToCalendar = async (id_userclerk: string, email: string, ca
     start: { dateTime: calendar_data.start },
     end: { dateTime: calendar_data.end },
     attendees: calendar_data.email ? calendar_data.email.map((email) => ({ email: email })) : [{ email }],
+    id: `task${calendar_data.id.toString()}`
   };
 
   const calendarResponse = await calendar.events.insert({
@@ -49,8 +50,11 @@ export const getEventsFromCalendar = async (id_userclerk: string): Promise<any> 
 
 export const searchEventFromCalendar = async (id_userclerk: string, event_id: string): Promise<boolean> => {
   try {
-    const client = await googleAuth(id_userclerk);
+    if (!event_id) {
+      return false;
+    }
 
+    const client = await googleAuth(id_userclerk);
     const calendar = google.calendar({ version: 'v3', auth: client });
 
     const calendarResponse = await calendar.events.get({
@@ -58,9 +62,17 @@ export const searchEventFromCalendar = async (id_userclerk: string, event_id: st
       eventId: event_id,
     });
 
-    return true;
-  } catch (error) {
-    console.log(error);
+    console.log(calendarResponse);
+
+    if(calendarResponse.data){
+      return true;
+    }
+
+    return false;
+  } catch (error: any) {
+    if (error.code === 404) {
+      return false;
+    }
     return false;
   }
 }

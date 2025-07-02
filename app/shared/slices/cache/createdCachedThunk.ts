@@ -22,6 +22,7 @@ interface CreateCachedThunkParams<Arg, Returned> {
   fetchFunction: (arg: Arg) => Promise<any>;
   cacheKeyGenerator?: (arg: Arg, api: { getState: () => RootState }) => string;
   ttl?: number;
+  responseType?: 'json' | 'boolean'
 }
 
 export const createCachedThunk = <Returned, Arg = void>({
@@ -29,6 +30,7 @@ export const createCachedThunk = <Returned, Arg = void>({
   fetchFunction,
   cacheKeyGenerator = (arg) => JSON.stringify(arg),
   ttl,
+  responseType = 'json'
 }: CreateCachedThunkParams<Arg, Returned>) => {
   const thunk: AsyncThunkPayloadCreator<Returned, Arg, { state: RootState }> = async (
     arg,
@@ -47,7 +49,7 @@ export const createCachedThunk = <Returned, Arg = void>({
 
     try {
       const response = await fetchFunction(arg);
-      const data = (await response.json()) as Returned;
+      const data = responseType === 'json' ? await response.json() : response as Returned;
       dispatch(setCache({ key: cacheKey, data, ttl }));
       return data;
     } catch (error) {

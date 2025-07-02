@@ -33,6 +33,7 @@ export const searchEventOnCalendarTunk = createCachedThunk({
     typePrefix: "googleCalendar/searchEventOnCalendar",
     fetchFunction: ({ id_userclerk, event_id }: { id_userclerk: string, event_id: string }) => searchEventFromCalendar(id_userclerk, event_id),
     cacheKeyGenerator: (arg: { id_userclerk: string, event_id: string }) => arg.id_userclerk + arg.event_id,
+    responseType: 'boolean'
 })
 
 export const getEventsFromCalendarTunk = createCachedThunk({
@@ -61,16 +62,21 @@ const googleCalendarSlice = createSlice({
             })
             .addCase(searchEventOnCalendarTunk.fulfilled, (state, action) => {
                 state.loadingSearch = false;
-                state.successSearch = true;
+                if(action.payload){
+                    state.successSearch = true;
+                }else{
+                    state.successSearch = false;
+                }
             })
             .addCase(searchEventOnCalendarTunk.rejected, (state, action: { payload: any }) => {
                 state.loadingSearch = false;
                 state.errorSearch = action.payload;
+                
             })
             .addCase(searchEventOnCalendarTunk.pending, (state, action) => {
                 state.loadingSearch = true;
                 state.successSearch = false;
-                state.errorSearch = null;
+                state.errorSearch = null;             
             })
             .addCase(getEventsFromCalendarTunk.fulfilled, (state, action) => {
                 state.loadingGet = false;
