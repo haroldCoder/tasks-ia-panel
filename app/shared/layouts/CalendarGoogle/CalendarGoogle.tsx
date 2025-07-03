@@ -14,6 +14,7 @@ import { useClerk } from "@clerk/nextjs";
 import Modal from "../../Components/Modal/Modal";
 import { Spinner } from "../../Components/Spinner/Spinner";
 import EmailsList from "../../Components/EmailsList/EmailsList";
+import CalendarUploaded from "./layouts/CalendarUploaded/CalendarUploaded";
 
 export const CalendarGoogle = ({
   title,
@@ -142,7 +143,7 @@ export const CalendarGoogle = ({
             </Button>
           </div>
         </div>
-        : <h2>Event exist</h2>
+        : <CalendarUploaded />
       }
 
     </>
