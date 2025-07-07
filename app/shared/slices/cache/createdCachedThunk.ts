@@ -22,7 +22,7 @@ interface CreateCachedThunkParams<Arg, Returned> {
   fetchFunction: (arg: Arg) => Promise<any>;
   cacheKeyGenerator?: (arg: Arg, api: { getState: () => RootState }) => string;
   ttl?: number;
-  responseType?: 'json' | 'boolean'
+  responseType?: 'json' | 'boolean' | 'data'
 }
 
 export const createCachedThunk = <Returned, Arg = void>({
