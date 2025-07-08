@@ -13,6 +13,8 @@ export interface IGoogleCalendar{
     errorSearch: string | null,
     dataSearch: [],
     successSearch: boolean | null,
+    loadingDelete: boolean | null, 
+    successDelete: boolean | null
 }
 
 export const googleCalendarState : IGoogleCalendar = {
@@ -28,4 +30,6 @@ export const googleCalendarState : IGoogleCalendar = {
     errorSearch: null,
     dataSearch: [],
     successSearch: null,
+    loadingDelete: null,
+    successDelete: null
 }

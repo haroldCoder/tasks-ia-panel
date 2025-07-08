@@ -17,7 +17,12 @@ interface RootState {
   [key: string]: any;
 }
 
-interface CreateCachedThunkParams<Arg, Returned> {
+interface ThunkArg {
+  forceRefresh?: boolean | null;
+  [key: string]: any;
+}
+
+interface CreateCachedThunkParams<Arg extends ThunkArg, Returned> {
   typePrefix: string;
   fetchFunction: (arg: Arg) => Promise<any>;
   cacheKeyGenerator?: (arg: Arg, api: { getState: () => RootState }) => string;
@@ -25,7 +30,7 @@ interface CreateCachedThunkParams<Arg, Returned> {
   responseType?: 'json' | 'boolean' | 'data'
 }
 
-export const createCachedThunk = <Returned, Arg = void>({
+export const createCachedThunk = <Returned, Arg extends ThunkArg = ThunkArg>({
   typePrefix,
   fetchFunction,
   cacheKeyGenerator = (arg) => JSON.stringify(arg),
@@ -39,7 +44,7 @@ export const createCachedThunk = <Returned, Arg = void>({
     const cacheKey = `${typePrefix}/${cacheKeyGenerator(arg, { getState })}`;
     const cacheState = getState().cache.data[cacheKey];
 
-    if (cacheState && cacheState.lastFetched) {
+    if (cacheState && cacheState.lastFetched && !arg.forceRefresh) {
       const isCacheValid =
         Date.now() - cacheState.lastFetched < (cacheState.ttl || getState().cache.ttl);
       if (isCacheValid) {

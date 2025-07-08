@@ -11,7 +11,7 @@ export default function Banner() {
   return (
     <div className="flex justify-between items-center py-6 px-8 bg-gray-950 text-white">
       <div className="flex gap-6  items-center">
-        <p className="text-lg font-extralight">Tasks IA panel</p>
+        <Link href={"/"}><p className="text-lg font-extralight">Tasks IA panel</p></Link>
         <Link className="text-sm text-gray-500 hover:text-gray-300 font-light" href={"/events"}>Events</Link>
       </div>
       {!user?.imageUrl ? (

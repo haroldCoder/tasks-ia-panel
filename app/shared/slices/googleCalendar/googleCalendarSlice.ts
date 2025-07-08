@@ -39,7 +39,7 @@ export const searchEventOnCalendarTunk = createCachedThunk({
 export const getEventsFromCalendarTunk = createCachedThunk({
     typePrefix: "googleCalendar/getEventsFromCalendar",
     fetchFunction: ({ id_userclerk }: { id_userclerk: string }) => getEventsFromCalendar(id_userclerk),
-    cacheKeyGenerator: (arg: { id_userclerk: string }) => arg.id_userclerk,
+    cacheKeyGenerator: (arg: { id_userclerk: string, forceRefresh: boolean | null }) => JSON.stringify({ id_userclerk: arg.id_userclerk, forceRefresh: arg.forceRefresh }),
     responseType: 'data'
 })
 
@@ -49,7 +49,7 @@ export const deleteEventTunk = createAsyncThunk(
         { rejectWithValue, dispatch }) => {
         try {
             const response = await deleteEventRequest(id_user, event_id);
-            if(!response){
+            if (!response) {
                 return rejectWithValue("Error deleting event on calendar")
             }
             dispatch(toastSuccess("Event deleted from Google Calendar successfuly"))
@@ -110,6 +110,18 @@ const googleCalendarSlice = createSlice({
                 state.loadingGet = true;
                 state.successGet = false;
                 state.errorGet = null;
+            })
+            .addCase(deleteEventTunk.fulfilled, (state, action: { payload: any }) => {
+                state.loadingDelete = false;
+                state.successDelete = true
+            })
+            .addCase(deleteEventTunk.rejected, (state, action: { payload: any }) => {
+                state.loadingDelete = false;
+                state.successCreate = false;
+            })
+            .addCase(deleteEventTunk.pending, (state, action) => {
+                state.loadingDelete = true;
+                state.successDelete = null;
             })
     },
 })
