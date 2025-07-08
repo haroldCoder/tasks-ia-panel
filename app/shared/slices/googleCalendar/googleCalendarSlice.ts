@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { googleCalendarState } from "../../constants/googleCalendar";
-import { addEventToCalendar, getEventsFromCalendar, searchEventFromCalendar } from "../../utils/requests/googleCalendar.requests";
+import { addEventToCalendar, deleteEventRequest, getEventsFromCalendar, searchEventFromCalendar } from "../../utils/requests/googleCalendar.requests";
 import { GoogleCalendar } from "../../interfaces/googleCalendar";
 import { toastError, toastSuccess } from "../../thunks/toasts";
 import { createCachedThunk } from "../cache/createdCachedThunk";
@@ -39,8 +39,27 @@ export const searchEventOnCalendarTunk = createCachedThunk({
 export const getEventsFromCalendarTunk = createCachedThunk({
     typePrefix: "googleCalendar/getEventsFromCalendar",
     fetchFunction: ({ id_userclerk }: { id_userclerk: string }) => getEventsFromCalendar(id_userclerk),
-    cacheKeyGenerator: (arg: { id_userclerk: string }) => arg.id_userclerk,
+    cacheKeyGenerator: (arg: { id_userclerk: string, forceRefresh: boolean | null }) => JSON.stringify({ id_userclerk: arg.id_userclerk, forceRefresh: arg.forceRefresh }),
+    responseType: 'data'
 })
+
+export const deleteEventTunk = createAsyncThunk(
+    "googleCalendar/deleteEvent",
+    async ({ id_user, event_id }: { id_user: string, event_id: string },
+        { rejectWithValue, dispatch }) => {
+        try {
+            const response = await deleteEventRequest(id_user, event_id);
+            if (!response) {
+                return rejectWithValue("Error deleting event on calendar")
+            }
+            dispatch(toastSuccess("Event deleted from Google Calendar successfuly"))
+        }
+        catch (err) {
+            dispatch(toastError("An ocurred error"))
+            return rejectWithValue("Error deleting event on calendar");
+        }
+    }
+)
 
 const googleCalendarSlice = createSlice({
     name: "googleCalendar",
@@ -62,25 +81,26 @@ const googleCalendarSlice = createSlice({
             })
             .addCase(searchEventOnCalendarTunk.fulfilled, (state, action) => {
                 state.loadingSearch = false;
-                if(action.payload){
+                if (action.payload) {
                     state.successSearch = true;
-                }else{
+                } else {
                     state.successSearch = false;
                 }
             })
             .addCase(searchEventOnCalendarTunk.rejected, (state, action: { payload: any }) => {
                 state.loadingSearch = false;
                 state.errorSearch = action.payload;
-                
+
             })
             .addCase(searchEventOnCalendarTunk.pending, (state, action) => {
                 state.loadingSearch = true;
                 state.successSearch = false;
-                state.errorSearch = null;             
+                state.errorSearch = null;
             })
-            .addCase(getEventsFromCalendarTunk.fulfilled, (state, action) => {
+            .addCase(getEventsFromCalendarTunk.fulfilled, (state, action: { payload: any }) => {
                 state.loadingGet = false;
                 state.successGet = true;
+                state.dataGet = action.payload;
             })
             .addCase(getEventsFromCalendarTunk.rejected, (state, action: { payload: any }) => {
                 state.loadingGet = false;
@@ -90,6 +110,18 @@ const googleCalendarSlice = createSlice({
                 state.loadingGet = true;
                 state.successGet = false;
                 state.errorGet = null;
+            })
+            .addCase(deleteEventTunk.fulfilled, (state, action: { payload: any }) => {
+                state.loadingDelete = false;
+                state.successDelete = true
+            })
+            .addCase(deleteEventTunk.rejected, (state, action: { payload: any }) => {
+                state.loadingDelete = false;
+                state.successCreate = false;
+            })
+            .addCase(deleteEventTunk.pending, (state, action) => {
+                state.loadingDelete = true;
+                state.successDelete = null;
             })
     },
 })

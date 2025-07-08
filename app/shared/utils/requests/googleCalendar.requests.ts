@@ -1,5 +1,5 @@
 "use server"
-import { google } from "googleapis"
+import { calendar_v3, google } from "googleapis"
 import { GoogleCalendar } from '../../interfaces/googleCalendar';
 import { googleAuth } from "../services/googleAuth";
 
@@ -30,7 +30,7 @@ export const addEventToCalendar = async (id_userclerk: string, email: string, ca
   return false
 }
 
-export const getEventsFromCalendar = async (id_userclerk: string): Promise<any> => {
+export const getEventsFromCalendar = async (id_userclerk: string): Promise<calendar_v3.Schema$Event[] | undefined> => {
   try {
     const client = await googleAuth(id_userclerk);
 
@@ -39,8 +39,6 @@ export const getEventsFromCalendar = async (id_userclerk: string): Promise<any> 
     const calendarResponse = await calendar.events.list({
       calendarId: 'primary',
     });
-
-    console.log(calendarResponse.data.items);
 
     return calendarResponse.data.items;
   } catch (error) {
@@ -73,4 +71,25 @@ export const searchEventFromCalendar = async (id_userclerk: string, event_id: st
     }
     return false;
   }
+}
+
+export const deleteEventRequest = async (id_clerk: string, event_id: string): Promise<boolean> => {
+  try {
+    if (!event_id) {
+      return false;
+    }
+    const client = await googleAuth(id_clerk);
+    const calendar = google.calendar({ version: 'v3', auth: client });
+    const calendarResponse = await calendar.events.delete({
+      calendarId: 'primary',
+      eventId: event_id,
+    });
+    return true;
+  } catch (error: any) {
+    if (error.code === 404) {
+      return false;
+    }
+    return false;
+  }
+
 }

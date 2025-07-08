@@ -1,0 +1,15 @@
+.btn{
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+    background-color: #3a3a3a;
+}
+
+.btn:hover{
+    background-color: #ff1c1c;
+    box-shadow:
+    0 0 5px #ff0000,
+    0 0 10px #ff0000,
+    0 0 20px #ff3f3f,
+    0 0 40px #ff3f3f;
+}

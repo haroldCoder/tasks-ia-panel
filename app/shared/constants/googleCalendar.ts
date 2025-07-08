@@ -1,3 +1,4 @@
+import { calendar_v3 } from "googleapis";
 
 export interface IGoogleCalendar{
     loadingCreate: boolean,
@@ -6,12 +7,14 @@ export interface IGoogleCalendar{
     successCreate: boolean | null,
     loadingGet: boolean,
     errorGet: string | null,
-    dataGet: [],
+    dataGet: Array<calendar_v3.Schema$Event>,
     successGet: boolean | null,
     loadingSearch: boolean,
     errorSearch: string | null,
     dataSearch: [],
     successSearch: boolean | null,
+    loadingDelete: boolean | null, 
+    successDelete: boolean | null
 }
 
 export const googleCalendarState : IGoogleCalendar = {
@@ -27,4 +30,6 @@ export const googleCalendarState : IGoogleCalendar = {
     errorSearch: null,
     dataSearch: [],
     successSearch: null,
+    loadingDelete: null,
+    successDelete: null
 }
