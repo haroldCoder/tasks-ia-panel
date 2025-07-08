@@ -62,9 +62,7 @@ export const searchEventFromCalendar = async (id_userclerk: string, event_id: st
       eventId: event_id,
     });
 
-    console.log(calendarResponse);
-
-    if(calendarResponse.data){
+    if (calendarResponse.data && calendarResponse.data.status !== "cancelled") {
       return true;
     }
 
