@@ -2,6 +2,7 @@
 import { calendar_v3, google } from "googleapis"
 import { GoogleCalendar } from '../../interfaces/googleCalendar';
 import { googleAuth } from "../services/googleAuth";
+import { PatchGoogleCalendar } from "../../interfaces/patchGoogleCalendar";
 
 export const addEventToCalendar = async (id_userclerk: string, email: string, calendar_data: GoogleCalendar): Promise<boolean> => {
   const client = await googleAuth(id_userclerk);
@@ -92,4 +93,62 @@ export const deleteEventRequest = async (id_clerk: string, event_id: string): Pr
     return false;
   }
 
+}
+
+export const patchEvent = async(id_clerk: string, event_id: string, data: PatchGoogleCalendar) =>{
+  try{
+    if (!event_id) {
+      return false;
+    }
+
+    const client = await googleAuth(id_clerk);
+    const calendar = google.calendar({ version: 'v3', auth: client });
+    const calendarResponse = await calendar.events.patch({
+      calendarId: 'primary',
+      eventId: event_id,
+      requestBody: {
+        status: data.status,
+        summary: data.summary,
+        description: data.description,
+        start: {
+          dateTime: data.start
+        },
+        end: {
+          dateTime: data.end
+        },
+        attendees: data.email?.map((email)=>({email: email}))
+      }
+    })
+
+    return true
+
+  }
+  catch(err: any){
+    if (err.code === 404) {
+      return false;
+    }
+    return false;
+  }
+}
+
+export const getEventCalendar = async (id_userclerk: string, event_id: string): Promise<calendar_v3.Schema$Event> => {
+  try {
+    if (!event_id) {
+      throw new Error("EventId is required")
+    }
+
+    const client = await googleAuth(id_userclerk);
+    const calendar = google.calendar({ version: 'v3', auth: client });
+
+    const calendarResponse = await calendar.events.get({
+      calendarId: 'primary',
+      eventId: event_id,
+    });
+
+    return calendarResponse.data
+  } catch (error: any) {
+    console.log(error);
+    
+    throw new Error(error)
+  }
 }

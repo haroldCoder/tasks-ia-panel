@@ -14,7 +14,11 @@ export interface IGoogleCalendar{
     dataSearch: [],
     successSearch: boolean | null,
     loadingDelete: boolean | null, 
-    successDelete: boolean | null
+    successDelete: boolean | null,
+    loadingGetEvt: boolean | null,
+    dataGetEvt: calendar_v3.Schema$Event | null,
+    loadingPatch: boolean | null,
+    successPatch: boolean | null
 }
 
 export const googleCalendarState : IGoogleCalendar = {
@@ -31,5 +35,9 @@ export const googleCalendarState : IGoogleCalendar = {
     dataSearch: [],
     successSearch: null,
     loadingDelete: null,
-    successDelete: null
+    successDelete: null,
+    loadingGetEvt: null,
+    dataGetEvt: null,
+    loadingPatch: null,
+    successPatch: null
 }
