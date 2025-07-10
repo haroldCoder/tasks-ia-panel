@@ -1,18 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { googleCalendarState } from "../../constants/googleCalendar";
-import { addEventToCalendar, deleteEventRequest, getEventsFromCalendar, searchEventFromCalendar } from "../../utils/requests/googleCalendar.requests";
+import { addEventToCalendar, deleteEventRequest, getEventCalendar, getEventsFromCalendar, patchEvent, searchEventFromCalendar } from "../../utils/requests/googleCalendar.requests";
 import { GoogleCalendar } from "../../interfaces/googleCalendar";
 import { toastError, toastSuccess } from "../../thunks/toasts";
 import { createCachedThunk } from "../cache/createdCachedThunk";
+import { calendar_v3 } from "googleapis";
+import { PatchGoogleCalendar } from "../../interfaces/patchGoogleCalendar";
 
 export const createEventOnCalendar = createAsyncThunk(
     "googleCalendar/createEventOnCalendar",
     async ({ id_user, email, event }: { id_user: string, email: string, event: GoogleCalendar }, { rejectWithValue, dispatch }) => {
         try {
             const response = await addEventToCalendar(id_user, email, event);
-
-            console.log(response);
-
 
             if (!response) {
                 return rejectWithValue("Error creating event on calendar");
@@ -32,7 +31,7 @@ export const createEventOnCalendar = createAsyncThunk(
 export const searchEventOnCalendarTunk = createCachedThunk({
     typePrefix: "googleCalendar/searchEventOnCalendar",
     fetchFunction: ({ id_userclerk, event_id }: { id_userclerk: string, event_id: string }) => searchEventFromCalendar(id_userclerk, event_id),
-    cacheKeyGenerator: (arg: { id_userclerk: string, event_id: string }) => arg.id_userclerk + arg.event_id,
+    cacheKeyGenerator: (arg: { id_userclerk: string, event_id: string, forceRefresh?: boolean }) => arg.id_userclerk + arg.event_id + arg.forceRefresh,
     responseType: 'boolean'
 })
 
@@ -57,6 +56,47 @@ export const deleteEventTunk = createAsyncThunk(
         catch (err) {
             dispatch(toastError("An ocurred error"))
             return rejectWithValue("Error deleting event on calendar");
+        }
+    }
+)
+
+export const getEventCalendarTunk = createAsyncThunk(
+    "googleCalendar/getEvent",
+    async ({ id_user, event_id }: { id_user: string, event_id: string },
+        { rejectWithValue }
+    ) => {
+        try {
+            const response = await getEventCalendar(id_user, event_id);
+
+            if (!response) {
+                return rejectWithValue("Error to fetch event")
+            }
+            return response;
+        }
+        catch (err) {
+            return rejectWithValue("Error to fetch event")
+        }
+    }
+)
+
+export const patchEventTunk = createAsyncThunk(
+    "googleCalendar/patchEvent",
+    async (
+        { id_user, event_id, data }:
+            { id_user: string, event_id: string, data: PatchGoogleCalendar },
+        { dispatch, rejectWithValue }) => {
+        try {
+            const response = await patchEvent(id_user, event_id, data);
+
+            if (!response) {
+                dispatch(toastError("An ocurred error update event"))
+            }
+
+            dispatch(toastSuccess("Event update successfully"))
+        }
+        catch (err) {
+            dispatch(toastError("An ocurred error update event"))
+            return err;
         }
     }
 )
@@ -122,6 +162,29 @@ const googleCalendarSlice = createSlice({
             .addCase(deleteEventTunk.pending, (state, action) => {
                 state.loadingDelete = true;
                 state.successDelete = null;
+            })
+            .addCase(getEventCalendarTunk.pending, (state) => {
+                state.loadingGetEvt = true;
+                state.dataGetEvt = null;
+            })
+            .addCase(getEventCalendarTunk.fulfilled, (state, action: { payload: calendar_v3.Schema$Event }) => {
+                state.loadingGetEvt = false;
+                state.dataGetEvt = action.payload;
+            })
+            .addCase(getEventCalendarTunk.rejected, (state) => {
+                state.loadingGetEvt = false;
+            })
+            .addCase(patchEventTunk.pending, (state) => {
+                state.loadingPatch = true;
+                state.successPatch = false;
+            })
+            .addCase(patchEventTunk.fulfilled, (state) => {
+                state.loadingPatch = false;
+                state.successPatch = true;
+            })
+            .addCase(patchEventTunk.rejected, (state) => {
+                state.loadingPatch = false;
+                state.successPatch = false;
             })
     },
 })

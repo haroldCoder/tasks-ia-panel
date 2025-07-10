@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styles from "./styles/calendarGoogle.module.css";
 import calendarIcon from "@/app/assets/calendarGoogle/calendar.svg";
 import Image from "next/image";
@@ -9,34 +9,44 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import "./styles/calendar.css";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store/store";
-import { createEventOnCalendar, searchEventOnCalendarTunk } from "../../slices/googleCalendar/googleCalendarSlice";
+import {
+  createEventOnCalendar,
+  getEventCalendarTunk,
+  patchEventTunk,
+} from "../../slices/googleCalendar/googleCalendarSlice";
 import { useClerk } from "@clerk/nextjs";
 import Modal from "../../Components/Modal/Modal";
 import { Spinner } from "../../Components/Spinner/Spinner";
 import EmailsList from "../../Components/EmailsList/EmailsList";
 import CalendarUploaded from "./layouts/CalendarUploaded/CalendarUploaded";
+import { StatusCalendar } from "../../enums/statusCalendar.enum";
+import { debounce } from "lodash";
 
 export const CalendarGoogle = ({
   title,
   description,
   start_date,
   end_date,
-  id
+  id,
 }: {
   title: Tasks["title"];
   description: Tasks["description"];
   start_date: string;
   end_date: string;
-  id: number
+  id: number;
 }) => {
   const [title_event, setTitleEvent] = React.useState(title);
   const [description_event, setDescriptionEvent] = React.useState(description);
   const [emails, setEmails] = React.useState<Array<string>>([]);
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useClerk();
-  const { loadingCreate, loadingSearch, successSearch, errorSearch } = useSelector(
-    (state: RootState) => state.googleCalendar
-  );
+  const {
+    loadingCreate,
+    loadingGetEvt,
+    dataGetEvt,
+    loadingPatch,
+    successPatch,
+  } = useSelector((state: RootState) => state.googleCalendar);
 
   const setTitleEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitleEvent(e.target.value);
@@ -49,36 +59,64 @@ export const CalendarGoogle = ({
   };
 
   const createEvent = () => {
-    dispatch(
-      createEventOnCalendar({
-        id_user: user?.id!,
-        email: user?.emailAddresses[0].emailAddress!,
-        event: {
-          summary: title_event,
-          description: description_event,
-          start: start_date,
-          end: end_date,
-          email: emails,
-          id: id
-        },
-      })
-    );
+    if (dataGetEvt?.status == StatusCalendar.CANCELLED) {
+      dispatch(
+        patchEventTunk({
+          id_user: user?.id!,
+          event_id: `task${id.toString()}`,
+          data: {
+            summary: title_event,
+            description: description_event,
+            start: start_date,
+            end: end_date,
+            email: emails,
+            id: id,
+            status: StatusCalendar.CONFIRMED,
+          },
+        })
+      );
+    } else {
+      dispatch(
+        createEventOnCalendar({
+          id_user: user?.id!,
+          email: user?.emailAddresses[0].emailAddress!,
+          event: {
+            summary: title_event,
+            description: description_event,
+            start: start_date,
+            end: end_date,
+            email: emails,
+            id: id,
+          },
+        })
+      );
+    }
   };
 
-  const searchCalendarEvent = async() =>{
-    await dispatch(searchEventOnCalendarTunk({ id_userclerk: user?.id!, event_id: `task${id.toString()}` }))
-  }
+  const getEvent = React.useRef(
+    debounce(() => {
+      dispatch(
+        getEventCalendarTunk({
+          id_user: user?.id!,
+          event_id: `task${id.toString()}`,
+        })
+      );
+    }, 500)
+  ).current;
 
   React.useEffect(() => {
-      searchCalendarEvent()
-  }, [])
+    getEvent();
+    return () => {
+      getEvent.cancel();
+    };
+  }, [dispatch, getEvent, successPatch]);
 
   return (
     <>
-      {(loadingCreate || loadingSearch) && (
+      {(loadingCreate || loadingPatch || loadingGetEvt) && (
         <Modal
           className={styles.modal}
-          onClose={() => { }}
+          onClose={() => {}}
           closeIcon={<></>}
           title={""}
         >
@@ -87,8 +125,7 @@ export const CalendarGoogle = ({
           </div>
         </Modal>
       )}
-      {
-        !successSearch ?
+      {dataGetEvt?.status == StatusCalendar.CANCELLED ? (
         <div className={styles.containerCalendar}>
           <div className="flex justify-center">
             <Image
@@ -143,9 +180,9 @@ export const CalendarGoogle = ({
             </Button>
           </div>
         </div>
-        : <CalendarUploaded />
-      }
-
+      ) : (
+        <CalendarUploaded />
+      )}
     </>
   );
 };
