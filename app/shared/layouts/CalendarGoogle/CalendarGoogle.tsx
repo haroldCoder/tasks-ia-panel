@@ -13,6 +13,7 @@ import {
   createEventOnCalendar,
   getEventCalendarTunk,
   patchEventTunk,
+  setDeleteSuccess,
 } from "../../slices/googleCalendar/googleCalendarSlice";
 import { useClerk } from "@clerk/nextjs";
 import Modal from "../../Components/Modal/Modal";
@@ -21,6 +22,7 @@ import EmailsList from "../../Components/EmailsList/EmailsList";
 import CalendarUploaded from "./layouts/CalendarUploaded/CalendarUploaded";
 import { StatusCalendar } from "../../enums/statusCalendar.enum";
 import { debounce } from "lodash";
+import { deleteSuccessEvent } from "./utils/deleteSuccessEvent";
 
 export const CalendarGoogle = ({
   title,
@@ -45,7 +47,7 @@ export const CalendarGoogle = ({
     loadingGetEvt,
     dataGetEvt,
     loadingPatch,
-    successPatch,
+    successDelete,
   } = useSelector((state: RootState) => state.googleCalendar);
 
   const setTitleEventHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,6 +77,10 @@ export const CalendarGoogle = ({
           },
         })
       );
+
+      deleteSuccessEvent(successDelete?.eventsid || [], 
+        `task${id.toString()}`, 
+        dispatch, setDeleteSuccess)
     } else {
       dispatch(
         createEventOnCalendar({
@@ -91,25 +97,40 @@ export const CalendarGoogle = ({
         })
       );
     }
+
+    getEvent({listen: true})
   };
 
   const getEvent = React.useRef(
-    debounce(() => {
+    debounce(({listen}: {listen: boolean}) => {
+      console.log(successDelete?.eventsid.some(
+              (evts) => evts == `task${id.toString()}`
+            ));
+      
       dispatch(
         getEventCalendarTunk({
           id_user: user?.id!,
           event_id: `task${id.toString()}`,
+          forceRefresh: !listen ?
+            (successDelete?.eventsid.some(
+              (evts) => evts == `task${id.toString()}`
+            ) || null ): true ,
         })
       );
     }, 500)
   ).current;
 
   React.useEffect(() => {
-    getEvent();
+    getEvent({listen: false});
     return () => {
       getEvent.cancel();
     };
-  }, [dispatch, getEvent, successPatch]);
+  }, [dispatch, getEvent, successDelete]);
+
+  React.useEffect(()=>{
+    console.log(successDelete);
+    
+  }, [successDelete])
 
   return (
     <>
@@ -125,7 +146,7 @@ export const CalendarGoogle = ({
           </div>
         </Modal>
       )}
-      {dataGetEvt?.status == StatusCalendar.CANCELLED ? (
+      {(dataGetEvt?.status == StatusCalendar.CANCELLED || !dataGetEvt) ? (
         <div className={styles.containerCalendar}>
           <div className="flex justify-center">
             <Image
