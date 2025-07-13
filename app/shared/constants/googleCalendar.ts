@@ -14,7 +14,10 @@ export interface IGoogleCalendar{
     dataSearch: [],
     successSearch: boolean | null,
     loadingDelete: boolean | null, 
-    successDelete: boolean | null,
+    successDelete: {
+        status: boolean,
+        eventsid: Array<string>
+    } | null,
     loadingGetEvt: boolean | null,
     dataGetEvt: calendar_v3.Schema$Event | null,
     loadingPatch: boolean | null,
