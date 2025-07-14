@@ -39,7 +39,7 @@ export const AditionalTask = ({
   const { task, loadingTask } = useSelector((state: RootState) => state.tasks);
 
   React.useEffect(() => {
-    dispatch(fetchTaskById(id));
+    dispatch(fetchTaskById({id}));
   }, []);
 
   React.useEffect(() => {

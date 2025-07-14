@@ -40,10 +40,11 @@ export const UserTasks = () => {
 
   const getAllTasks = async () => {
     await dispatch(
-      fetchTasks(
-        user!.emailAddresses[0].emailAddress ||
-          user!.phoneNumbers[0].phoneNumber
-      )
+      fetchTasks({
+        term:
+          user!.emailAddresses[0].emailAddress ||
+          user!.phoneNumbers[0].phoneNumber,
+      })
     );
   };
 

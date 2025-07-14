@@ -8,21 +8,19 @@ import { NotFoundUser } from "./NotFoundUser/NotFoundUser";
 import { DashBoard } from "./DashBoard/DashBoard";
 
 export default function DashBoardView() {
-  const { error, loading } = useSelector(
-    (state: RootState) => state.users
-  );
+  const { error, loading } = useSelector((state: RootState) => state.users);
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useClerk();
 
   const fetchUser = async () => {
     await dispatch(
-      fetchUserThunk(
-        user?.emailAddresses
+      fetchUserThunk({
+        term: user?.emailAddresses
           ? user.emailAddresses[0].emailAddress
           : user?.phoneNumbers
           ? user.phoneNumbers[0].phoneNumber
-          : ""
-      )
+          : "",
+      })
     );
   };
 
@@ -30,14 +28,17 @@ export default function DashBoardView() {
     fetchUser();
   }, []);
 
-
   return (
     <div className="p-12">
-      {loading ? 
-      <div className="flex justify-center items-center h-[85vh]">
-        <Spinner size="xl" />
-      </div>
-       : error ? <NotFoundUser /> : <DashBoard />}
+      {loading ? (
+        <div className="flex justify-center items-center h-[85vh]">
+          <Spinner size="xl" />
+        </div>
+      ) : error ? (
+        <NotFoundUser />
+      ) : (
+        <DashBoard />
+      )}
     </div>
   );
 }

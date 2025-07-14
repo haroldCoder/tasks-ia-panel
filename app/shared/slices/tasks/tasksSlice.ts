@@ -10,8 +10,8 @@ import { TaskAditional } from "../../interfaces/taskAditional";
 
 export const fetchTasks = createCachedThunk({
     typePrefix: 'tasks/fetchTasksUser',
-    fetchFunction: (term: string) => getTasksByUser(term),
-    cacheKeyGenerator: (term: string) => term
+    fetchFunction: ({term}: {term: string}) => getTasksByUser(term),
+    cacheKeyGenerator: ({term, forceRefresh = false}: {term: string, forceRefresh?: boolean}) => term+forceRefresh
 })
 
 export const deleteTaskThunk = createAsyncThunk(
@@ -67,8 +67,8 @@ export const assignAditionalTaskThunk = createAsyncThunk(
 
 export const fetchTaskById = createCachedThunk({
     typePrefix: 'tasks/fetchTaskById',
-    fetchFunction: (id: number) => getTaskById(id),
-    cacheKeyGenerator: (id: number) => id.toString()
+    fetchFunction: ({id}: {id: number}) => getTaskById(id),
+    cacheKeyGenerator: ({id, forceRefresh = false}: {id: number, forceRefresh?: boolean}) => id.toString()+forceRefresh
 })
 
 

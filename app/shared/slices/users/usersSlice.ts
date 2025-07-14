@@ -5,8 +5,8 @@ import { createCachedThunk } from "../cache/createdCachedThunk";
 
 export const fetchUserThunk = createCachedThunk({
     typePrefix: 'users/fetchUser', 
-    fetchFunction: (term: string) => verifyUser(term), 
-    cacheKeyGenerator: (term: string) => term});
+    fetchFunction: ({term}: {term: string}) => verifyUser(term), 
+    cacheKeyGenerator: ({term, forceRefresh = false}: {term: string, forceRefresh?: boolean}) => term});
 
 const userSlice = createSlice({
   name: "users",
