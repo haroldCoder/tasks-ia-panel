@@ -43,7 +43,7 @@ export const EventsCalendar = () => {
 
   React.useEffect(() => {
     const regex = new RegExp("^task.*");
-    const filterEvents = dataGet.filter(
+    const filterEvents = dataGet?.filter(
       (event: calendar_v3.Schema$Event) =>
         event.iCalUID && regex.test(event.iCalUID)
     );
