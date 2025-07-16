@@ -78,9 +78,12 @@ export const CalendarGoogle = ({
         })
       );
 
-      deleteSuccessEvent(successDelete?.eventsid || [], 
-        `task${id.toString()}`, 
-        dispatch, setDeleteSuccess)
+      deleteSuccessEvent(
+        successDelete?.eventsid || [],
+        `task${id.toString()}`,
+        dispatch,
+        setDeleteSuccess
+      );
     } else {
       dispatch(
         createEventOnCalendar({
@@ -98,39 +101,35 @@ export const CalendarGoogle = ({
       );
     }
 
-    getEvent({listen: true})
+    getEvent({ listen: true });
   };
 
   const getEvent = React.useRef(
-    debounce(({listen}: {listen: boolean}) => {
-      console.log(successDelete?.eventsid.some(
-              (evts) => evts == `task${id.toString()}`
-            ));
-      
+    debounce(({ listen }: { listen: boolean }) => {
       dispatch(
         getEventCalendarTunk({
           id_user: user?.id!,
           event_id: `task${id.toString()}`,
-          forceRefresh: !listen ?
-            (successDelete?.eventsid.some(
-              (evts) => evts == `task${id.toString()}`
-            ) || null ): true ,
+          forceRefresh: !listen
+            ? successDelete?.eventsid.some(
+                (evts) => evts == `task${id.toString()}`
+              ) || null
+            : true,
         })
       );
     }, 500)
   ).current;
 
   React.useEffect(() => {
-    getEvent({listen: false});
+    getEvent({ listen: false });
     return () => {
       getEvent.cancel();
     };
   }, [dispatch, getEvent, successDelete]);
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     console.log(successDelete);
-    
-  }, [successDelete])
+  }, [successDelete]);
 
   return (
     <>
@@ -146,7 +145,7 @@ export const CalendarGoogle = ({
           </div>
         </Modal>
       )}
-      {(dataGetEvt?.status == StatusCalendar.CANCELLED || !dataGetEvt) ? (
+      {dataGetEvt?.status == StatusCalendar.CANCELLED || !dataGetEvt ? (
         <div className={styles.containerCalendar}>
           <div className="flex justify-center">
             <Image

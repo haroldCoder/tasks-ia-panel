@@ -22,6 +22,7 @@ import { Spinner } from "@/app/shared/Components/Spinner/Spinner";
 import style from "./styles/eventsCalendar.module.css";
 import { NotFoundEvents } from "./layout/NotFoundEvents/NotFoundEvents";
 import Banner from "../Banner/Banner";
+import { debounce } from "lodash";
 
 export const EventsCalendar = () => {
   const { dataGet, loadingDelete, successDelete, loadingGet } = useSelector(
@@ -31,11 +32,16 @@ export const EventsCalendar = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [events, setEvents] = useState<Array<calendar_v3.Schema$Event>>([]);
 
-  const getAllEventsTask = async () => {
-    await dispatch(
-      getEventsFromCalendarTunk({ id_userclerk: user?.id!, forceRefresh: true })
-    );
-  };
+  const getAllEventsTask = React.useRef(
+    debounce(async () => {
+      await dispatch(
+        getEventsFromCalendarTunk({
+          id_userclerk: user?.id!,
+          forceRefresh: true,
+        })
+      );
+    }, 500)
+  ).current;
 
   React.useEffect(() => {
     getAllEventsTask();
@@ -62,7 +68,7 @@ export const EventsCalendar = () => {
           <Spinner size="lg" />
         </Modal>
       )}
-      {(events.length > 0 && !loadingGet) ? (
+      {events.length > 0 && !loadingGet ? (
         <div className="flex gap-8 px-9 py-8">
           {events.map((evt) => (
             <Card key={evt.id} className="w-[20%]">
