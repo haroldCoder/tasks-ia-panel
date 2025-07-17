@@ -1,3 +1,5 @@
+"use client";
+
 import { getEventsFromCalendarTunk } from "@/app/shared/slices/googleCalendar/googleCalendarSlice";
 import { AppDispatch, RootState } from "@/app/store/store";
 import { useClerk } from "@clerk/nextjs";
@@ -33,10 +35,10 @@ export const EventsCalendar = () => {
   const [events, setEvents] = useState<Array<calendar_v3.Schema$Event>>([]);
 
   const getAllEventsTask = React.useRef(
-    debounce(async () => {
+    debounce(async (userId: string) => {
       await dispatch(
         getEventsFromCalendarTunk({
-          id_userclerk: user?.id!,
+          id_userclerk: userId,
           forceRefresh: true,
         })
       );
@@ -44,8 +46,10 @@ export const EventsCalendar = () => {
   ).current;
 
   React.useEffect(() => {
-    getAllEventsTask();
-  }, [successDelete]);
+    if (user) {
+      getAllEventsTask(user.id);
+    }
+  }, [successDelete, user]);
 
   React.useEffect(() => {
     const regex = new RegExp("^task.*");
@@ -68,9 +72,9 @@ export const EventsCalendar = () => {
           <Spinner size="lg" />
         </Modal>
       )}
-      {events.length > 0 && !loadingGet ? (
+      {events?.length > 0 && !loadingGet ? (
         <div className="flex gap-8 px-9 py-8">
-          {events.map((evt) => (
+          {events?.map((evt) => (
             <Card key={evt.id} className="w-[20%]">
               <CardHeader className="border-b-[1.5px] px-1 mx-4 border-b-gray-600">
                 <div className="flex justify-between items-center">
