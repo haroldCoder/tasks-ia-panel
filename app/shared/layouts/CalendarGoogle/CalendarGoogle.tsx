@@ -100,28 +100,32 @@ export const CalendarGoogle = ({
         })
       );
     }
-
-    getEvent({ listen: true });
+    dispatch(
+      getEventCalendarTunk({
+        id_user: user?.id!,
+        event_id: `task${id.toString()}`,
+        forceRefresh: true,
+      })
+    );
   };
 
   const getEvent = React.useRef(
-    debounce(({ listen }: { listen: boolean }) => {
+    debounce(() => {
       dispatch(
         getEventCalendarTunk({
           id_user: user?.id!,
           event_id: `task${id.toString()}`,
-          forceRefresh: !listen
-            ? (successDelete?.eventsid.some(
-                (evts) => evts == `task${id.toString()}`
-              ) || null)
-            : true,
+          forceRefresh:
+            successDelete?.eventsid.some(
+              (evts) => evts == `task${id.toString()}`
+            ) || null,
         })
       );
     }, 500)
   ).current;
 
   React.useEffect(() => {
-    getEvent({ listen: false });
+    getEvent();
     return () => {
       getEvent.cancel();
     };
