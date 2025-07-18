@@ -111,9 +111,9 @@ export const CalendarGoogle = ({
           id_user: user?.id!,
           event_id: `task${id.toString()}`,
           forceRefresh: !listen
-            ? successDelete?.eventsid.some(
+            ? (successDelete?.eventsid.some(
                 (evts) => evts == `task${id.toString()}`
-              ) || null
+              ) || null)
             : true,
         })
       );
@@ -126,10 +126,6 @@ export const CalendarGoogle = ({
       getEvent.cancel();
     };
   }, [dispatch, getEvent, successDelete]);
-
-  React.useEffect(() => {
-    console.log(successDelete);
-  }, [successDelete]);
 
   return (
     <>
