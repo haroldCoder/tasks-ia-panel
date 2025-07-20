@@ -16,12 +16,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useClerk } from "@clerk/nextjs";
-import React, { EventHandler, Fragment, useCallback, useEffect } from "react";
+import React, {
+  EventHandler,
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./styles/userTasks.module.css";
 import "./styles/userTasks.css"; // Assuming you have some styles defined in this file
 import PriorityIndicator from "@/app/shared/Components/TaskContainer/PriorityIndicator/PriorityIndicator";
 import { useRouter } from "next/navigation";
+import { debounce } from "lodash";
 
 export const UserTasks = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -38,19 +45,24 @@ export const UserTasks = () => {
   const router = useRouter();
   const [loadingRoute, setLoadingRoute] = React.useState<boolean>(false);
 
-  const getAllTasks = async () => {
-    await dispatch(
-      fetchTasks({
-        term:
-          user!.emailAddresses[0].emailAddress ||
-          user!.phoneNumbers[0].phoneNumber,
-      })
-    );
-  };
+  const getAllTasks = useRef(
+    debounce(async () => {
+      await dispatch(
+        fetchTasks({
+          term:
+            user!.emailAddresses[0].emailAddress ||
+            user!.phoneNumbers[0].phoneNumber,
+        })
+      );
+    }, 500)
+  ).current;
 
   useEffect(() => {
     getAllTasks();
-  }, []);
+    return () => {
+      getAllTasks.cancel();
+    };
+  }, [getAllTasks]);
 
   const selectTaskHandler = useCallback((task: Tasks) => {
     setSelectTask(task);

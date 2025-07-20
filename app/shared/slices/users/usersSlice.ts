@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { usersState } from "../../constants/users";
+import { UserDataUsers, usersState, UserState } from "../../constants/users";
 import { patchUser, verifyUser } from "../../utils/requests/users.requests";
 import { createCachedThunk } from "../cache/createdCachedThunk";
 import { toastError, toastSuccess } from "../../thunks/toasts";
@@ -37,10 +37,10 @@ const userSlice = createSlice({
         state.success = null;
         state.error = null;
       })
-      .addCase(fetchUserThunk.fulfilled, (state, action) => {
+      .addCase(fetchUserThunk.fulfilled, (state : UserState, action : {payload: {response: UserDataUsers} | any}) => {
         state.loading = false;
         state.success = true;
-        state.data = action.payload;
+        state.data = action.payload.response;
       })
       .addCase(fetchUserThunk.rejected, (state, action) => {
         state.loading = false;

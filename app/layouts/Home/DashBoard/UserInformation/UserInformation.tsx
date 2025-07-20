@@ -13,7 +13,7 @@ import { Spinner } from "@/app/shared/Components/Spinner/Spinner";
 const UserInformation = () => {
   const { user } = useClerk();
   const [edit, setEdit] = React.useState<boolean>(false);
-  const { loadingUpdate, successUpdate } = useSelector((state: RootState) => state.users);
+  const { loadingUpdate, successUpdate, data } = useSelector((state: RootState) => state.users);
 
   const openModalEdit = () => {
     setEdit(true);
@@ -42,9 +42,9 @@ const UserInformation = () => {
           ) : (
             <EditDataUser
               avatar={user?.imageUrl!}
-              username={user?.username!}
-              email={user?.emailAddresses[0]?.emailAddress}
-              cellphone={user?.phoneNumbers[0]?.phoneNumber}
+              username={data?.username}
+              email={data?.email}
+              cellphone={data?.celphone}
             />
           )}
         </Modal>
@@ -65,15 +65,15 @@ const UserInformation = () => {
         </div>
         <div>
           <b>Username</b>
-          <p>{user?.username || "-"}</p>
+          <p>{data?.username || "-"}</p>
         </div>
         <div>
           <b>Email</b>
-          <p>{user?.emailAddresses[0].emailAddress || "-"}</p>
+          <p>{data?.email || "-"}</p>
         </div>
         <div>
           <b>Phone number</b>
-          <p>{user?.phoneNumbers[0]?.phoneNumber || "-"}</p>
+          <p>{data?.celphone || "-"}</p>
         </div>
         <section className="w-full flex justify-between mt-4">
           <Button onClick={openModalEdit}>
