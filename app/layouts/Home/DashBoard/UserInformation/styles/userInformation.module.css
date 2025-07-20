@@ -9,3 +9,11 @@
     background-color: #FFF !important;
     color: #000;
 }
+
+.modal{
+    background-color: #000 !important;
+}
+
+.no_modal{
+    background-color: transparent !important;
+}

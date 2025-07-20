@@ -1,0 +1,23 @@
+.input{
+    border: 1.5px solid #FFF;
+    padding: 10px 15px;
+    color: #FFF;
+    border-radius: 12px !important;
+    background-color: transparent !important;
+}
+
+.input:hover{
+    border: 1px solid #1626ff;
+}
+
+.btn{
+    background-color: black !important;
+    border: 1.5px solid #b3b3b3;
+    color: #FFF;
+    border-radius: 12px !important;
+    cursor: pointer;
+}
+
+.btn:hover{
+    background-image: linear-gradient(to top left, #1626ff, #000 50%);
+}

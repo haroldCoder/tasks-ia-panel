@@ -1,5 +1,6 @@
 const users = "users";
 
 export const usersRoutes = {
-    getUser: `${users}/users/`
+    getUser: `${users}/users/`,
+    updateUser: `${users}/users/`
 };
